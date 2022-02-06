@@ -20,6 +20,7 @@ type CreateUserInput struct {
 }
 
 type UpdateUserInput struct {
+	ID       int    `json:"id" binding:"required"`
 	Username string `json:"username"`
 	Nickname string `json:"nickname"`
 	Debt     int    `json:"debt"`

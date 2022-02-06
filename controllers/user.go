@@ -11,7 +11,7 @@ import (
 func CreateUser(c *gin.Context) {
 	var input models.CreateUserInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, models.User{})
 		return
 	}
 
@@ -37,7 +37,8 @@ func GetUserList(c *gin.Context) {
 func GetUser(c *gin.Context) {
 	var user models.User
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		user.PK = -1
+		c.JSON(http.StatusBadRequest, user)
 		return
 	}
 
@@ -47,14 +48,14 @@ func GetUser(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 	var user models.User
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		c.JSON(http.StatusBadRequest, user)
 		return
 	}
 
 	var input models.UpdateUserInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		//never goes here
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, user)
 		return
 	}
 
@@ -66,7 +67,7 @@ func UpdateUser(c *gin.Context) {
 func RemoveUser(c *gin.Context) {
 	var user models.User
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		c.JSON(http.StatusBadRequest, user)
 		return
 	}
 

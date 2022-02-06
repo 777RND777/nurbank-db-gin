@@ -11,7 +11,7 @@ import (
 func CreateApplication(c *gin.Context) {
 	var input models.CreateApplicationInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, models.Application{})
 		return
 	}
 
@@ -38,7 +38,8 @@ func GetApplicationList(c *gin.Context) {
 func GetApplication(c *gin.Context) {
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		application.PK = -1
+		c.JSON(http.StatusBadRequest, application)
 		return
 	}
 
@@ -48,14 +49,14 @@ func GetApplication(c *gin.Context) {
 func UpdateApplication(c *gin.Context) {
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		c.JSON(http.StatusBadRequest, application)
 		return
 	}
 
 	var input models.UpdateApplicationInput
 	if err := c.ShouldBindJSON(&input); err != nil {
 		//never goes here
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, application)
 		return
 	}
 
@@ -67,7 +68,7 @@ func UpdateApplication(c *gin.Context) {
 func RemoveApplication(c *gin.Context) {
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Record not found!"})
+		c.JSON(http.StatusBadRequest, application)
 		return
 	}
 

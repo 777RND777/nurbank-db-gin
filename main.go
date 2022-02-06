@@ -11,7 +11,11 @@ func main() {
 	r := gin.Default()
 
 	models.ConnectDatabase()
-	r.GET("/users", controllers.GetUsers)
+	r.POST("/users", controllers.CreateUser)
+	r.GET("/users", controllers.GetUserList)
+	r.GET("/users/:id", controllers.GetUser)
+	r.PUT("/users/:id", controllers.UpdateUser)
+	r.DELETE("/users/:id", controllers.RemoveUser)
 
 	if err := r.Run(); err != nil {
 		return

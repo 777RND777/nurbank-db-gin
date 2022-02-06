@@ -24,14 +24,14 @@ func CreateUser(c *gin.Context) {
 	}
 	models.DB.Create(&user)
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, user)
 }
 
 func GetUserList(c *gin.Context) {
 	var users []models.User
 	models.DB.Find(&users)
 
-	c.JSON(http.StatusOK, gin.H{"data": users})
+	c.JSON(http.StatusOK, users)
 }
 
 func GetUser(c *gin.Context) {
@@ -41,7 +41,7 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, user)
 }
 
 func UpdateUser(c *gin.Context) {
@@ -60,7 +60,7 @@ func UpdateUser(c *gin.Context) {
 
 	models.DB.Model(&user).Update(input)
 
-	c.JSON(http.StatusOK, gin.H{"data": user})
+	c.JSON(http.StatusOK, user)
 }
 
 func RemoveUser(c *gin.Context) {
@@ -72,5 +72,5 @@ func RemoveUser(c *gin.Context) {
 
 	models.DB.Delete(&user)
 
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	c.JSON(http.StatusOK, true)
 }

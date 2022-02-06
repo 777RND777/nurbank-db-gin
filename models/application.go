@@ -4,7 +4,7 @@ type Application struct {
 	PK          int    `json:"pk"`
 	ID          int    `json:"id"`
 	UserID      int    `json:"user_id"`
-	User        User   `gorm:"foreignKey:UserID"`
+	User        User   `json:"user" gorm:"foreignKey:UserID"`
 	Value       int    `json:"value"`
 	RequestDate string `json:"request_date"`
 	AnswerDate  string `json:"answer_date"`

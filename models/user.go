@@ -8,7 +8,7 @@ type User struct {
 	Username     string        `json:"username"`
 	Nickname     string        `json:"nickname"`
 	Debt         int           `json:"debt"`
-	Applications []Application `gorm:"foreignKey:UserID"`
+	Applications []Application `json:"applications" gorm:"foreignKey:UserID"`
 }
 
 type CreateUserInput struct {

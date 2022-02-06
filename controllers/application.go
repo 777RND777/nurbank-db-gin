@@ -25,14 +25,14 @@ func CreateApplication(c *gin.Context) {
 
 	models.DB.Create(application)
 
-	c.JSON(http.StatusOK, gin.H{"data": application})
+	c.JSON(http.StatusOK, application)
 }
 
 func GetApplicationList(c *gin.Context) {
 	var applications []models.Application
 	models.DB.Find(&applications)
 
-	c.JSON(http.StatusOK, gin.H{"data": applications})
+	c.JSON(http.StatusOK, applications)
 }
 
 func GetApplication(c *gin.Context) {
@@ -42,7 +42,7 @@ func GetApplication(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"data": application})
+	c.JSON(http.StatusOK, application)
 }
 
 func UpdateApplication(c *gin.Context) {
@@ -61,7 +61,7 @@ func UpdateApplication(c *gin.Context) {
 
 	models.DB.Model(&application).Update(input)
 
-	c.JSON(http.StatusOK, gin.H{"data": application})
+	c.JSON(http.StatusOK, application)
 }
 
 func RemoveApplication(c *gin.Context) {
@@ -73,5 +73,5 @@ func RemoveApplication(c *gin.Context) {
 
 	models.DB.Delete(&application)
 
-	c.JSON(http.StatusOK, gin.H{"data": true})
+	c.JSON(http.StatusOK, true)
 }

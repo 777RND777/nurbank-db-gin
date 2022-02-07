@@ -20,7 +20,7 @@ func CreateUser(c *gin.Context) {
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 		Username:  input.Username,
-		Nickname:  input.Nickname,
+		Nickname:  input.Username,
 	}
 	models.DB.Create(&user)
 

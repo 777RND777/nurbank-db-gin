@@ -42,6 +42,10 @@ func GetUser(c *gin.Context) {
 		return
 	}
 
+	if len(user.Applications) == 0 {
+		user.Applications = []models.Application{}
+	}
+
 	c.JSON(http.StatusOK, user)
 }
 

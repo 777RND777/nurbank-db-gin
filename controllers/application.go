@@ -18,21 +18,15 @@ func CreateApplication(c *gin.Context) {
 	var application = models.Application{
 		ID:          input.ID,
 		UserID:      input.UserID,
+		Password:    input.Password,
 		Value:       input.Value,
-		RequestDate: input.RequestDate,
+		RequestDate: GetCurrentTime(),
 		IsAdmin:     input.IsAdmin,
 	}
 
 	models.DB.Create(application)
 
 	c.JSON(http.StatusOK, application)
-}
-
-func GetApplicationList(c *gin.Context) {
-	var applications []models.Application
-	models.DB.Find(&applications)
-
-	c.JSON(http.StatusOK, applications)
 }
 
 func GetApplication(c *gin.Context) {
@@ -46,33 +40,48 @@ func GetApplication(c *gin.Context) {
 	c.JSON(http.StatusOK, application)
 }
 
-func UpdateApplication(c *gin.Context) {
+func ApproveApplication(c *gin.Context) {
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
+		application.PK = -1
+		c.JSON(http.StatusBadRequest, application)
+		return
+	}
+	if len(application.AnswerDate) > 0 {
 		c.JSON(http.StatusBadRequest, application)
 		return
 	}
 
-	var input models.UpdateApplicationInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		//never goes here
-		c.JSON(http.StatusBadRequest, application)
+	application.AnswerDate = GetCurrentTime()
+	application.Approved = true
+	models.DB.Model(&application).Update()
+
+	var user models.User
+	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
+		c.JSON(http.StatusBadRequest, user)
 		return
 	}
 
-	models.DB.Model(&application).Update(input)
+	user.Debt += application.Value
+	models.DB.Save(&user)
 
 	c.JSON(http.StatusOK, application)
 }
 
-func RemoveApplication(c *gin.Context) {
+func DeclineApplication(c *gin.Context) {
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
+		application.PK = -1
+		c.JSON(http.StatusBadRequest, application)
+		return
+	}
+	if len(application.AnswerDate) > 0 {
 		c.JSON(http.StatusBadRequest, application)
 		return
 	}
 
-	models.DB.Delete(&application)
+	application.AnswerDate = GetCurrentTime()
+	models.DB.Save(&application)
 
-	c.JSON(http.StatusOK, true)
+	c.JSON(http.StatusOK, application)
 }

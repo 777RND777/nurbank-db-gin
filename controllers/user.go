@@ -17,6 +17,7 @@ func CreateUser(c *gin.Context) {
 
 	user := models.User{
 		ID:        input.ID,
+		Password:  input.Password,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 		Username:  input.Username,
@@ -37,16 +38,33 @@ func GetUserList(c *gin.Context) {
 func GetUser(c *gin.Context) {
 	var user models.User
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		user.PK = -1
 		c.JSON(http.StatusBadRequest, user)
 		return
 	}
 
-	if len(user.Applications) == 0 {
-		user.Applications = []models.Application{}
+	c.JSON(http.StatusOK, user)
+}
+
+func GetUserApplications(c *gin.Context) {
+	var applications []models.Application
+	models.DB.Find(&applications).Where("user_id = ?", c.Param("user_id"))
+
+	c.JSON(http.StatusOK, applications)
+}
+
+func GetUserPending(c *gin.Context) {
+	var applications []models.Application
+	models.DB.Find(&applications).Where("user_id = ?", c.Param("user_id"))
+	if len(applications) == 0 {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		return
+	}
+	if len(applications[len(applications)-1].AnswerDate) > 0 {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	c.JSON(http.StatusOK, applications)
 }
 
 func UpdateUser(c *gin.Context) {
@@ -58,24 +76,11 @@ func UpdateUser(c *gin.Context) {
 
 	var input models.UpdateUserInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		//never goes here
 		c.JSON(http.StatusBadRequest, user)
 		return
 	}
-
+	//TODO check
 	models.DB.Model(&user).Update(input)
 
 	c.JSON(http.StatusOK, user)
-}
-
-func RemoveUser(c *gin.Context) {
-	var user models.User
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, user)
-		return
-	}
-
-	models.DB.Delete(&user)
-
-	c.JSON(http.StatusOK, true)
 }

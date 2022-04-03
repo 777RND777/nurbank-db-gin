@@ -15,14 +15,14 @@ func main() {
 	r.POST("/users", controllers.CreateUser)
 	r.GET("/users", controllers.GetUserList)
 	r.GET("/users/:id", controllers.GetUser)
+	r.GET("/users/:id/applications", controllers.GetUserApplications)
+	r.GET("/users/:id/pending", controllers.GetUserPending)
 	r.PUT("/users/:id", controllers.UpdateUser)
-	r.DELETE("/users/:id", controllers.RemoveUser)
 
 	r.POST("/applications", controllers.CreateApplication)
-	r.GET("/applications", controllers.GetApplicationList)
 	r.GET("/applications/:id", controllers.GetApplication)
-	r.PUT("/applications/:id", controllers.UpdateApplication)
-	r.DELETE("/applications/:id", controllers.RemoveApplication)
+	r.PUT("/applications/:id/approve", controllers.ApproveApplication)
+	r.PUT("/applications/:id/decline", controllers.DeclineApplication)
 
 	if err := r.Run(); err != nil {
 		return

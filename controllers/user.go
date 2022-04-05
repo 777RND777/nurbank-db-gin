@@ -11,13 +11,19 @@ import (
 func CreateUser(c *gin.Context) {
 	var input models.CreateUserInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.User{})
+		c.JSON(http.StatusBadRequest, models.User{PK: -1})
+		return
+	}
+
+	var passwordHash, err = HashPassword(input.Password)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, models.User{PK: -1})
 		return
 	}
 
 	user := models.User{
 		ID:        input.ID,
-		Password:  input.Password,
+		Password:  passwordHash,
 		FirstName: input.FirstName,
 		LastName:  input.LastName,
 		Username:  input.Username,
@@ -38,7 +44,7 @@ func GetUserList(c *gin.Context) {
 func GetUser(c *gin.Context) {
 	var user models.User
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, user)
+		c.JSON(http.StatusBadRequest, models.User{PK: -1})
 		return
 	}
 
@@ -47,14 +53,14 @@ func GetUser(c *gin.Context) {
 
 func GetUserApplications(c *gin.Context) {
 	var applications []models.Application
-	models.DB.Find(&applications).Where("user_id = ?", c.Param("user_id"))
+	models.DB.Find(&applications).Where("user_id = ?", c.Param("id"))
 
 	c.JSON(http.StatusOK, applications)
 }
 
 func GetUserPending(c *gin.Context) {
 	var applications []models.Application
-	models.DB.Find(&applications).Where("user_id = ?", c.Param("user_id"))
+	models.DB.Find(&applications).Where("user_id = ?", c.Param("id"))
 	if len(applications) == 0 {
 		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
 		return
@@ -70,16 +76,21 @@ func GetUserPending(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 	var user models.User
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, user)
+		c.JSON(http.StatusBadRequest, models.User{PK: -1})
 		return
 	}
 
 	var input models.UpdateUserInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, user)
+		c.JSON(http.StatusBadRequest, models.User{PK: -1})
 		return
 	}
-	//TODO check
+
+	if !CheckPasswordHash(input.Password, user.Password) {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		return
+	}
+
 	models.DB.Model(&user).Update(input)
 
 	c.JSON(http.StatusOK, user)

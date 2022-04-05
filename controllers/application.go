@@ -11,7 +11,12 @@ import (
 func CreateApplication(c *gin.Context) {
 	var input models.CreateApplicationInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{})
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		return
+	}
+
+	if !CheckUser(input.UserID, input.Password) {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
 		return
 	}
 
@@ -24,7 +29,7 @@ func CreateApplication(c *gin.Context) {
 		IsAdmin:     input.IsAdmin,
 	}
 
-	models.DB.Create(application)
+	models.DB.Create(&application)
 
 	c.JSON(http.StatusOK, application)
 }
@@ -32,8 +37,7 @@ func CreateApplication(c *gin.Context) {
 func GetApplication(c *gin.Context) {
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		application.PK = -1
-		c.JSON(http.StatusBadRequest, application)
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
 		return
 	}
 
@@ -41,14 +45,24 @@ func GetApplication(c *gin.Context) {
 }
 
 func ApproveApplication(c *gin.Context) {
+	var input applicationAuth
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		return
+	}
+
+	if !CheckUser(input.UserID, input.Password) {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		return
+	}
+
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		application.PK = -1
-		c.JSON(http.StatusBadRequest, application)
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
 		return
 	}
 	if len(application.AnswerDate) > 0 {
-		c.JSON(http.StatusBadRequest, application)
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
 		return
 	}
 
@@ -57,8 +71,8 @@ func ApproveApplication(c *gin.Context) {
 	models.DB.Model(&application).Update()
 
 	var user models.User
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, user)
+	if err := models.DB.Where("id = ?", application.UserID).First(&user).Error; err != nil {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
 		return
 	}
 
@@ -69,14 +83,24 @@ func ApproveApplication(c *gin.Context) {
 }
 
 func DeclineApplication(c *gin.Context) {
+	var input applicationAuth
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		return
+	}
+
+	if !CheckUser(input.UserID, input.Password) {
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		return
+	}
+
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		application.PK = -1
-		c.JSON(http.StatusBadRequest, application)
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
 		return
 	}
 	if len(application.AnswerDate) > 0 {
-		c.JSON(http.StatusBadRequest, application)
+		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
 		return
 	}
 

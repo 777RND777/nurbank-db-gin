@@ -23,7 +23,6 @@ func CreateApplication(c *gin.Context) {
 	var application = models.Application{
 		ID:          input.ID,
 		UserID:      input.UserID,
-		Password:    input.Password,
 		Value:       input.Value,
 		RequestDate: GetCurrentTime(),
 		IsAdmin:     input.IsAdmin,
@@ -68,7 +67,7 @@ func ApproveApplication(c *gin.Context) {
 
 	application.AnswerDate = GetCurrentTime()
 	application.Approved = true
-	models.DB.Model(&application).Update()
+	models.DB.Save(&application)
 
 	var user models.User
 	if err := models.DB.Where("id = ?", application.UserID).First(&user).Error; err != nil {

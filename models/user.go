@@ -12,11 +12,11 @@ type User struct {
 }
 
 type CreateUserInput struct {
-	ID        int    `json:"id"`
+	ID        int    `json:"id" binding:"required"`
 	Password  string `json:"password" binding:"required"`
-	FirstName string `json:"first_name" binding:"required"`
-	LastName  string `json:"last_name" binding:"required"`
-	Username  string `json:"username" binding:"required"`
+	FirstName string `json:"first_name"`
+	LastName  string `json:"last_name"`
+	Username  string `json:"username"`
 }
 
 type UpdateUserInput struct {

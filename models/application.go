@@ -3,7 +3,6 @@ package models
 type Application struct {
 	ID          int    `json:"id" gorm:"unique"`
 	UserID      int    `json:"user_id" binding:"required"`
-	Password    string `json:"password" binding:"required"`
 	PK          int    `json:"pk" gorm:"primary_key"`
 	Value       int    `json:"value"`
 	RequestDate string `json:"request_date"`

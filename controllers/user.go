@@ -70,7 +70,7 @@ func GetUserPending(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, applications)
+	c.JSON(http.StatusOK, applications[len(applications)-1])
 }
 
 func UpdateUser(c *gin.Context) {
@@ -91,6 +91,7 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
+	input.Password = user.Password //avoid resetting password
 	models.DB.Model(&user).Update(input)
 
 	c.JSON(http.StatusOK, user)

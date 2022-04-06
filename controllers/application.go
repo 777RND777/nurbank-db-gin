@@ -11,17 +11,17 @@ import (
 func CreateApplication(c *gin.Context) {
 	var input models.CreateApplicationInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusBadRequest, models.Application{})
 		return
 	}
 
 	if !CheckUser(input.UserID, input.Password) {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusUnauthorized, models.Application{})
 		return
 	}
 
 	var application = models.Application{
-		ID:          input.ID,
+		ID:          GetUniqueID(),
 		UserID:      input.UserID,
 		Value:       input.Value,
 		RequestDate: GetCurrentTime(),
@@ -36,7 +36,7 @@ func CreateApplication(c *gin.Context) {
 func GetApplication(c *gin.Context) {
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusNotFound, models.Application{})
 		return
 	}
 
@@ -46,22 +46,22 @@ func GetApplication(c *gin.Context) {
 func ApproveApplication(c *gin.Context) {
 	var input applicationAuth
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusBadRequest, models.Application{})
 		return
 	}
 
 	if !CheckUser(input.UserID, input.Password) {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusUnauthorized, models.Application{})
 		return
 	}
 
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusNotFound, models.Application{})
 		return
 	}
 	if len(application.AnswerDate) > 0 {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusNoContent, models.Application{})
 		return
 	}
 
@@ -70,10 +70,8 @@ func ApproveApplication(c *gin.Context) {
 	models.DB.Save(&application)
 
 	var user models.User
-	if err := models.DB.Where("id = ?", application.UserID).First(&user).Error; err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
-		return
-	}
+	//no check because of CheckUser func
+	models.DB.Where("id = ?", application.UserID).First(&user)
 
 	user.Debt += application.Value
 	models.DB.Save(&user)
@@ -84,22 +82,22 @@ func ApproveApplication(c *gin.Context) {
 func DeclineApplication(c *gin.Context) {
 	var input applicationAuth
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusBadRequest, models.Application{})
 		return
 	}
 
 	if !CheckUser(input.UserID, input.Password) {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusUnauthorized, models.Application{})
 		return
 	}
 
 	var application models.Application
 	if err := models.DB.Where("id = ?", c.Param("id")).First(&application).Error; err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusNotFound, models.Application{})
 		return
 	}
 	if len(application.AnswerDate) > 0 {
-		c.JSON(http.StatusBadRequest, models.Application{PK: -1})
+		c.JSON(http.StatusNoContent, models.Application{})
 		return
 	}
 

@@ -11,7 +11,7 @@ import (
 func CreateUser(c *gin.Context) {
 	var input models.CreateUserInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.User{})
+		c.JSON(http.StatusUnprocessableEntity, models.User{})
 		return
 	}
 
@@ -88,15 +88,15 @@ func GetUserPending(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-	var user models.User
-	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
-		c.JSON(http.StatusNotFound, models.User{})
+	var input models.UpdateUserInput
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusUnprocessableEntity, models.User{})
 		return
 	}
 
-	var input models.UpdateUserInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.User{})
+	var user models.User
+	if err := models.DB.Where("id = ?", c.Param("id")).First(&user).Error; err != nil {
+		c.JSON(http.StatusNotFound, models.User{})
 		return
 	}
 

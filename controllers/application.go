@@ -11,7 +11,7 @@ import (
 func CreateApplication(c *gin.Context) {
 	var input models.CreateApplicationInput
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{})
+		c.JSON(http.StatusUnprocessableEntity, models.Application{})
 		return
 	}
 
@@ -46,7 +46,7 @@ func GetApplication(c *gin.Context) {
 func ApproveApplication(c *gin.Context) {
 	var input applicationAuth
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{})
+		c.JSON(http.StatusUnprocessableEntity, models.Application{})
 		return
 	}
 
@@ -82,7 +82,7 @@ func ApproveApplication(c *gin.Context) {
 func DeclineApplication(c *gin.Context) {
 	var input applicationAuth
 	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, models.Application{})
+		c.JSON(http.StatusUnprocessableEntity, models.Application{})
 		return
 	}
 

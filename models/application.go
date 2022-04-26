@@ -1,7 +1,7 @@
 package models
 
 type Application struct {
-	ID          int    `json:"_id" gorm:"unique"`
+	ID          int    `json:"id_" gorm:"unique"`
 	UserID      int    `json:"user_id" binding:"required"`
 	PK          int    `json:"pk" gorm:"primary_key"`
 	Value       int    `json:"value"`

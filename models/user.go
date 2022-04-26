@@ -1,7 +1,7 @@
 package models
 
 type User struct {
-	ID        int    `json:"_id" gorm:"unique"`
+	ID        int    `json:"id_" gorm:"unique"`
 	Password  string `json:"password" binding:"required"`
 	PK        int    `json:"pk" gorm:"primary_key"`
 	FirstName string `json:"first_name"`
@@ -12,7 +12,7 @@ type User struct {
 }
 
 type CreateUserInput struct {
-	ID        int    `json:"_id" binding:"required"`
+	ID        int    `json:"id_" binding:"required"`
 	Password  string `json:"password" binding:"required"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -20,7 +20,7 @@ type CreateUserInput struct {
 }
 
 type UpdateUserInput struct {
-	ID       int    `json:"id"`
+	ID       int    `json:"id_"`
 	Password string `json:"password" binding:"required"`
 	Username string `json:"username"`
 	Nickname string `json:"nickname"`
